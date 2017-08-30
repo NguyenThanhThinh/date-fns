@@ -15,39 +15,40 @@ var monthValues = {
 }
 
 // `timeOfDay` is used to designate which part of the day it is, when used with 12-hour clock.
-// Use the system which is used the most commonly in the locale.
-// For example, if the country doesn't use a.m./p.m., you can use `night`/`morning`/`afternoon`/`evening`:
-//
-//   var timeOfDayValues = {
-//     any: ['in the night', 'in the morning', 'in the afternoon', 'in the evening']
-//   }
-//
-// And later:
-//
-//   var localize = {
-//     // The callback takes the hours as the argument and returns the array index
-//     timeOfDay: buildLocalizeFn(timeOfDayValues, 'any', function (hours) {
-//       if (hours >= 17) {
-//         return 3
-//       } else if (hours >= 12) {
-//         return 2
-//       } else if (hours >= 4) {
-//         return 1
-//       } else {
-//         return 0
-//       }
-//     }),
-//     timesOfDay: buildLocalizeArrayFn(timeOfDayValues, 'any')
-//   }
+// Vietnamese are used to AM/PM borrowing from English/French, hence `uppercase` and `lowercase`
+// are just like English but the `long` format being localized with full word describing time of day
 var timeOfDayValues = {
-  // Vietnamese are used to AM/PM borrowing from English, hence `uppercase` and
-  // `lowercase` are just like English but I'm leaving the `long`
-  // format being localized with abbreviations found in some systems (SÁng / CHiều);
-  // however, personally, I don't think `Chiều` sounds appropriate for `PM`
-  // TODO: for `long` version, the values should be 'sáng' 'trưa' 'chiều' 'tối'
   uppercase: ['AM', 'PM'],
   lowercase: ['am', 'pm'],
-  long: ['SA', 'CH']
+  // below: 'morning', 'noon', 'afternoon', 'evening', 'night'
+  long: ['sáng', 'trưa', 'chiều', 'tối', 'đêm']
+}
+
+function timeOfDay (dirtyHours, dirtyOptions) {
+  var hours = Number(dirtyHours)
+  var options = dirtyOptions || {}
+  var type = options.type ? String(options.type) : 'long'
+
+  if (type === 'uppercase') {
+    return (hours / 12) >= 1 ? timeOfDayValues.uppercase[1] : timeOfDayValues.uppercase[0]
+  } else if (type === 'lowercase') {
+    return (hours / 12) >= 1 ? timeOfDayValues.lowercase[1] : timeOfDayValues.lowercase[0]
+  }
+
+  // long
+  if (hours < 1) {
+    return timeOfDayValues.long[4] // 12h đêm
+  } else if (hours < 11) {
+    return timeOfDayValues.long[0] // sáng
+  } else if (hours < 14) {
+    return timeOfDayValues.long[1] // trưa
+  } else if (hours < 19) {
+    return timeOfDayValues.long[2] // chiều
+  } else if (hours < 22) {
+    return timeOfDayValues.long[3] // tối
+  }
+
+  return timeOfDayValues.long[4] // đêm
 }
 
 // If ordinal numbers depend on context, for example,
@@ -106,9 +107,7 @@ var localize = {
   weekdays: buildLocalizeArrayFn(weekdayValues, 'long'),
   month: buildLocalizeFn(monthValues, 'long'),
   months: buildLocalizeArrayFn(monthValues, 'long'),
-  timeOfDay: buildLocalizeFn(timeOfDayValues, 'long', function (hours) {
-    return (hours / 12) >= 1 ? 1 : 0
-  }),
+  timeOfDay: timeOfDay,
   timesOfDay: buildLocalizeArrayFn(timeOfDayValues, 'long')
 }
 

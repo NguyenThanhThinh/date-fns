@@ -113,16 +113,58 @@ describe('vi locale', function () {
         assert(result === '12:00 am')
       })
 
-      it('12 SA', function () {
+      it('12 dem', function () {
         var date = new Date(1986, 3 /* Apr */, 6, 0, 0, 0, 900)
         var result = format(date, 'h:mm aa', {locale: locale})
-        assert(result === '12:00 SA')
+        assert(result === '12:00 đêm')
       })
 
-      it('12 CH', function () {
+      it('1 - 10 sang', function () {
+        var date = new Date(1986, 3 /* Apr */, 6, 1, 15, 0, 900)
+        var result = format(date, 'h:mm aa', { locale: locale })
+        assert(result === '1:15 sáng')
+        result = format(date.setHours(6), 'h:mm aa', { locale: locale })
+        assert(result === '6:15 sáng')
+        result = format(date.setHours(10), 'h:mm aa', { locale: locale })
+        assert(result === '10:15 sáng')
+      })
+
+      it('11 - 13 trua', function () {
         var date = new Date(1986, 3 /* Apr */, 4, 12, 0, 0, 900)
         var result = format(date, 'hh:mm aa', {locale: locale})
-        assert(result === '12:00 CH')
+        assert(result === '12:00 trưa')
+        result = format(date.setHours(11), 'hh:mm aa', { locale: locale })
+        assert(result === '11:00 trưa')
+        result = format(date.setHours(13), 'hh:mm aa', { locale: locale })
+        assert(result === '01:00 trưa')
+      })
+
+      it('14 - 18 chieu', function () {
+        var date = new Date(1986, 3 /* Apr */, 4, 14, 30, 0, 900)
+        var result = format(date, 'h:mm aa', { locale: locale })
+        assert(result === '2:30 chiều')
+        result = format(date.setHours(16), 'h:mm aa', { locale: locale })
+        assert(result = '4:30 chiều')
+        result = format(date.setHours(18), 'h:mm aa', { locale: locale })
+        assert(result = '6:30 chiều')
+      })
+
+      it('19 - 21 toi', function () {
+        var date = new Date(1986, 3 /* Apr */, 4, 19, 45, 0, 900)
+        var result = format(date, 'hh:mm aa', { locale: locale })
+        assert(result === '07:45 tối')
+        result = format(date.setHours(20), 'hh:mm aa', { locale: locale })
+        assert(result === '08:45 tối')
+        result = format(date.setHours(21), 'hh:mm aa', { locale: locale })
+        assert(result === '09:45 tối')
+      })
+
+      it('22 - 23 dem', function () {
+        var date = new Date(1986, 3 /* Apr */, 4, 22, 59, 0, 900)
+        var result = format(date, 'hh:mm aa', { locale: locale })
+        assert(result === '10:59 đêm')
+        result = format(date.setHours(23), 'hh:mm aa', { locale: locale })
+        assert(result === '11:59 đêm')
       })
 
       it('12PM', function () {
@@ -281,10 +323,10 @@ describe('vi locale', function () {
   })
 
   context('with `parse`', function () {
-    var baseDate = new Date(1986, 3 /* Apr */, 4, 10, 32, 0, 900)
+    var baseDate = new Date(1986, 3 /* Apr */, 4, 10, 32, 0, 900) // Fri Apr 04 1986 10:32:00 GMT+0700 (+07)
 
-    it('sets the first day of the week', function () {
-      // FIXME: I think there's an issue with the parsing here
+    it('sets to Sunday of the week', function () {
+      // Since date.getDay() of 0 is Sunday, but it is now last day of the week in VI locale, the result date is forward
       var result = parse('0', 'd', baseDate, {locale: locale})
       assert.deepEqual(result, new Date(1986, 3 /* Apr */, 6))
     })

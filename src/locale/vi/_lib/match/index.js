@@ -43,13 +43,13 @@ var parseMonthPatterns = {
 //   }
 var matchTimesOfDayPatterns = {
   short: /^(am|pm)/i,
-  // NOTE: I'm using long pattern as localized Vietnamese version
+  // In Java and some OS, AM and PM are localized to SA and CH respectively
   long: /^(sa|ch)/i
 }
 
 var parseTimeOfDayPatterns = {
-  short: [/^am/i, /^pm/i],
-  long: [/^sa/i, /^ch/i]
+  short: [/^a/i, /^p/i],
+  long: [/^s/i, /^c/i]
 }
 
 var match = {
@@ -59,7 +59,7 @@ var match = {
   weekday: buildParseFn(parseWeekdayPatterns, 'long'),
   months: buildMatchFn(matchMonthsPatterns, 'short'), // Vietnamese prefer month as number
   month: buildParseFn(parseMonthPatterns, 'short'),
-  timesOfDay: buildMatchFn(matchTimesOfDayPatterns, 'short'), // Vietnamese prefer am/pm
+  timesOfDay: buildMatchFn(matchTimesOfDayPatterns, 'short'), // Vietnamese prefer short am/pm
   timeOfDay: buildParseFn(parseTimeOfDayPatterns, 'short')
 }
 
